@@ -3,10 +3,10 @@
 /checkouts
 pom.xml
 pom.xml.asc
+resources/public/js/out
 *.jar
 *.class
 /.lein-*
 /.nrepl-port
-/resources/public/js
 /out
 /.repl
