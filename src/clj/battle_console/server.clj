@@ -11,7 +11,7 @@
             [ring.adapter.jetty :refer [run-jetty]]))
 
 (deftemplate page
-  (io/resource "index.html") [] [:body] (if is-dev? inject-devmode-html identity))
+  (io/resource "public/index.html") [] [:body] (if is-dev? inject-devmode-html identity))
 
 (defroutes routes
   (resources "/")
