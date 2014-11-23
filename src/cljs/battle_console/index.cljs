@@ -8,6 +8,7 @@
 (defn handler
   "Handles the root page and asks for the token"
   []
+  (println "GET /login")
   (state/set-page :home))
 
 (defn by-id [id]
@@ -65,6 +66,6 @@
   (om/root
     render-index
     (state/current)
-    {:target (. js/document (getElementById "app"))}))
+    {:target (. js/document (getElementById "login"))}))
 
 (register-renderer)
