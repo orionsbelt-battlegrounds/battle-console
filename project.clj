@@ -15,6 +15,7 @@
                  [clj-time "0.8.0"]
                  [figwheel "0.1.4-SNAPSHOT"]
                  [environ "1.0.0"]
+                 [cljs-ajax "0.3.3"]
                  [secretary "1.2.1"]
                  [com.cemerick/piggieback "0.1.3"]
                  [weasel "0.4.0-SNAPSHOT"]
