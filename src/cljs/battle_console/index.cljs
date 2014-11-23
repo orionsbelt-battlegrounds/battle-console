@@ -1,5 +1,6 @@
 (ns battle-console.index
   (:require [battle-console.state :as state]
+            [ajax.core :refer [GET POST]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]))
 
@@ -11,18 +12,50 @@
 (defn by-id [id]
   (.getElementById js/document (name id)))
 
+(defn- after-load-games
+  "After the load games call"
+  [data]
+  (js/alert data))
+
+(defn- error-loading-games
+  "When getting games fails"
+  [data]
+  (state/set-state :loading false)
+  (state/set-error :auth-fail (str (data :status) "  " (data :message))))
+
 (defn- check-token
   "Processes the inserted token"
   []
-  (js/alert (-> (by-id "token") (.-value))))
+  (let [token (-> (by-id "token") (.-value))
+        url (str "http://api.orionsbelt.eu/player/latest-games?token=" token)]
+    (state/set-state :loading true)
+    (state/clear-error :auth-fail)
+    (GET url {:handler after-load-games
+              :error-handler error-loading-games})))
+
+(defn css-result-class
+  "Gets the result based on css class"
+  [error]
+  (if error
+    "has-error"
+    ""))
+
+(defn- button-caption
+  "The next button's caption"
+  []
+  (if (state/get-state :loading)
+    "Loading..."
+    "Next"))
 
 (defn- render-index
   "Renders the index page"
   [app owner]
-    (om/component (dom/div nil
+  (let [error (state/get-error :auth-fail)]
+    (om/component (dom/div #js {:className (str "form-group " (css-result-class error))}
                     (dom/h1 nil "Enter your API token")
-                    (dom/input #js {:type "text" :id "token"})
-                    (dom/button #js {:onClick check-token :className "btn btn-default"} "Next"))))
+                    (dom/label #js {:for "token" :className "control-label"} "Token:")
+                    (dom/input #js {:type "text" :id "token" :className "form-control"})
+                    (dom/button #js {:onClick check-token :className "btn btn-default"} (button-caption))))))
 
 (defn- register-renderer
   "Register an Om renderer for this page"
