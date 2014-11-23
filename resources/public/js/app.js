@@ -1,12 +1,6 @@
 goog.addDependency("base.js", ['goog'], []);
 goog.addDependency("../cljs/core.js", ['cljs.core'], ['goog.string', 'goog.object', 'goog.string.StringBuffer', 'goog.array']);
 goog.addDependency("../om/dom.js", ['om.dom'], ['cljs.core']);
-<<<<<<< HEAD
-goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom', 'goog.ui.IdGenerator']);
-goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
-goog.addDependency("../battle_console/index.js", ['battle_console.index'], ['cljs.core', 'om.dom', 'om.core', 'battle_console.state']);
-goog.addDependency("../clojure/string.js", ['clojure.string'], ['goog.string', 'cljs.core', 'goog.string.StringBuffer']);
-=======
 goog.addDependency("../com/cognitect/transit/util.js", ['com.cognitect.transit.util'], ['goog.object']);
 goog.addDependency("../com/cognitect/transit/eq.js", ['com.cognitect.transit.eq'], ['com.cognitect.transit.util']);
 goog.addDependency("../com/cognitect/transit/types.js", ['com.cognitect.transit.types'], ['com.cognitect.transit.util', 'com.cognitect.transit.eq', 'goog.math.Long']);
@@ -22,12 +16,6 @@ goog.addDependency("../clojure/string.js", ['clojure.string'], ['goog.string', '
 goog.addDependency("../cljs/reader.js", ['cljs.reader'], ['goog.string', 'cljs.core', 'goog.string.StringBuffer']);
 goog.addDependency("../ajax/core.js", ['ajax.core'], ['goog.net.XhrManager', 'goog.net.XhrIo', 'goog.Uri.QueryData', 'goog.Uri', 'cljs.core', 'cognitect.transit', 'goog.net.EventType', 'goog.structs', 'goog.json.Serializer', 'clojure.string', 'cljs.reader', 'goog.events', 'goog.net.ErrorCode']);
 goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom', 'goog.ui.IdGenerator']);
-<<<<<<< HEAD
-goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
-goog.addDependency("../battle_console/index.js", ['battle_console.index'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'battle_console.state']);
->>>>>>> ae9e7a5... Show error feedback
-=======
->>>>>>> 2bf6e3d... Add games handler
 goog.addDependency("../clojure/walk.js", ['clojure.walk'], ['cljs.core']);
 goog.addDependency("../secretary/core.js", ['secretary.core'], ['cljs.core', 'clojure.string', 'clojure.walk']);
 goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
@@ -37,10 +25,6 @@ goog.addDependency("../battle_console/core.js", ['battle_console.core'], ['cljs.
 goog.addDependency("../clojure/browser/event.js", ['clojure.browser.event'], ['cljs.core', 'goog.events.EventTarget', 'goog.events.EventType', 'goog.events']);
 goog.addDependency("../clojure/browser/net.js", ['clojure.browser.net'], ['goog.net.xpc.CfgFields', 'goog.net.XhrIo', 'goog.json', 'goog.Uri', 'cljs.core', 'goog.net.EventType', 'goog.net.xpc.CrossPageChannel', 'clojure.browser.event']);
 goog.addDependency("../weasel/impls/websocket.js", ['weasel.impls.websocket'], ['cljs.core', 'clojure.browser.net', 'goog.net.WebSocket', 'clojure.browser.event']);
-<<<<<<< HEAD
-goog.addDependency("../cljs/reader.js", ['cljs.reader'], ['goog.string', 'cljs.core', 'goog.string.StringBuffer']);
-=======
->>>>>>> ae9e7a5... Show error feedback
 goog.addDependency("../weasel/repl.js", ['weasel.repl'], ['weasel.impls.websocket', 'cljs.core', 'clojure.browser.net', 'cljs.reader', 'clojure.browser.event']);
 goog.addDependency("../cljs/core/async/impl/protocols.js", ['cljs.core.async.impl.protocols'], ['cljs.core']);
 goog.addDependency("../cljs/core/async/impl/buffers.js", ['cljs.core.async.impl.buffers'], ['cljs.core', 'cljs.core.async.impl.protocols']);
