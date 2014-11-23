@@ -10,10 +10,17 @@
   []
   (state/set-page :games))
 
+(defn- get-master-css
+  "Getst the master CSS"
+  []
+  (cond
+    (not= :games (state/current-page)) "hide"
+    :else ""))
+
 (defn- render-games
   "Renders the index page"
   [app owner]
-  (om/component (dom/div nil
+  (om/component (dom/div #js {:className (get-master-css)}
                   (dom/h1 nil "Games"))))
 
 (defn- register-renderer
@@ -22,6 +29,6 @@
   (om/root
     render-games
     (state/current)
-    {:target (. js/document (getElementById "app"))}))
+    {:target (. js/document (getElementById "games"))}))
 
 (register-renderer)

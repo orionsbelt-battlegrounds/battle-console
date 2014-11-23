@@ -25,4 +25,4 @@
 
 (defn main
   []
-  (secretary/dispatch! "/"))
+  (secretary/dispatch! "/login"))
