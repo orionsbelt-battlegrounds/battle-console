@@ -21,7 +21,7 @@
   "Renders the index page"
   [app owner]
   (om/component (dom/div #js {:className (get-master-css)}
-                  (dom/h1 nil "Games"))))
+                  (dom/h1 nil (str (count (state/get-state :games-data)) " Games Available")))))
 
 (defn- register-renderer
   "Register an Om renderer for this page"
