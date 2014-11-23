@@ -17,6 +17,9 @@
 (defn- after-load-games
   "After the load games call"
   [data]
+  (state/set-state :loading false)
+  (state/set-state :token (get-token))
+  (state/set-state :games-data data)
   (secretary/dispatch! "/games"))
 
 (defn- error-loading-games
@@ -25,10 +28,15 @@
   (state/set-state :loading false)
   (state/set-error :auth-fail (str (data :status) "  " (data :message))))
 
+(defn- get-token
+  "Gets the current input token"
+  []
+  (-> (by-id "token") (.-value)))
+
 (defn- check-token
   "Processes the inserted token"
   []
-  (let [token (-> (by-id "token") (.-value))
+  (let [token (get-token)
         url (str "http://api.orionsbelt.eu/player/latest-games?token=" token)]
     (state/set-state :loading true)
     (state/clear-error :auth-fail)
@@ -40,6 +48,7 @@
   [error]
   (cond
     (not= :home (state/current-page)) "hide"
+    (state/get-state :token) "has-success"
     error "has-error"
     :else ""))
 
