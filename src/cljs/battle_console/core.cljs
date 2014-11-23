@@ -3,6 +3,7 @@
             [om.dom :as dom :include-macros true]
             [goog.events :as events]
             [battle-console.index :as index]
+            [battle-console.games :as games]
             [secretary.core :as secretary :refer-macros [defroute]])
   (:import goog.History
            goog.history.EventType))
@@ -10,6 +11,8 @@
 (secretary/set-config! :prefix "#")
 
 (defroute "/" {:as params} (index/handler))
+(defroute "/login" {:as params} (index/handler))
+(defroute "/games" {:as params} (games/handler))
 
 (defroute "/help" {:as params}
   (js/console.log "GET /help"))

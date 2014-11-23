@@ -2,7 +2,8 @@
   (:require [battle-console.state :as state]
             [ajax.core :refer [GET POST]]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]))
+            [om.dom :as dom :include-macros true]
+            [secretary.core :as secretary :refer-macros [defroute]]))
 
 (defn handler
   "Handles the root page and asks for the token"
@@ -15,7 +16,7 @@
 (defn- after-load-games
   "After the load games call"
   [data]
-  (js/alert data))
+  (secretary/dispatch! "/games"))
 
 (defn- error-loading-games
   "When getting games fails"
@@ -36,9 +37,10 @@
 (defn css-result-class
   "Gets the result based on css class"
   [error]
-  (if error
-    "has-error"
-    ""))
+  (cond
+    (not= :home (state/current-page)) "hide"
+    error "has-error"
+    :else ""))
 
 (defn- button-caption
   "The next button's caption"

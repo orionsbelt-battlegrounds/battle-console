@@ -16,11 +16,12 @@ goog.addDependency("../clojure/string.js", ['clojure.string'], ['goog.string', '
 goog.addDependency("../cljs/reader.js", ['cljs.reader'], ['goog.string', 'cljs.core', 'goog.string.StringBuffer']);
 goog.addDependency("../ajax/core.js", ['ajax.core'], ['goog.net.XhrManager', 'goog.net.XhrIo', 'goog.Uri.QueryData', 'goog.Uri', 'cljs.core', 'cognitect.transit', 'goog.net.EventType', 'goog.structs', 'goog.json.Serializer', 'clojure.string', 'cljs.reader', 'goog.events', 'goog.net.ErrorCode']);
 goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom', 'goog.ui.IdGenerator']);
-goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
-goog.addDependency("../battle_console/index.js", ['battle_console.index'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'battle_console.state']);
 goog.addDependency("../clojure/walk.js", ['clojure.walk'], ['cljs.core']);
 goog.addDependency("../secretary/core.js", ['secretary.core'], ['cljs.core', 'clojure.string', 'clojure.walk']);
-goog.addDependency("../battle_console/core.js", ['battle_console.core'], ['cljs.core', 'om.dom', 'goog.history.EventType', 'goog.History', 'battle_console.index', 'om.core', 'secretary.core', 'goog.events']);
+goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
+goog.addDependency("../battle_console/index.js", ['battle_console.index'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state']);
+goog.addDependency("../battle_console/games.js", ['battle_console.games'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state']);
+goog.addDependency("../battle_console/core.js", ['battle_console.core'], ['cljs.core', 'om.dom', 'goog.history.EventType', 'goog.History', 'battle_console.index', 'battle_console.games', 'om.core', 'secretary.core', 'goog.events']);
 goog.addDependency("../clojure/browser/event.js", ['clojure.browser.event'], ['cljs.core', 'goog.events.EventTarget', 'goog.events.EventType', 'goog.events']);
 goog.addDependency("../clojure/browser/net.js", ['clojure.browser.net'], ['goog.net.xpc.CfgFields', 'goog.net.XhrIo', 'goog.json', 'goog.Uri', 'cljs.core', 'goog.net.EventType', 'goog.net.xpc.CrossPageChannel', 'clojure.browser.event']);
 goog.addDependency("../weasel/impls/websocket.js", ['weasel.impls.websocket'], ['cljs.core', 'clojure.browser.net', 'goog.net.WebSocket', 'clojure.browser.event']);
