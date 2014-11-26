@@ -1,1 +1,1 @@
-lein with-profile -dev,+production uberjar && foreman start
+lein with-profile -dev,+production uberjar
