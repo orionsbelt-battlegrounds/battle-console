@@ -14,6 +14,11 @@
 (defn by-id [id]
   (.getElementById js/document (name id)))
 
+(defn- get-token
+  "Gets the current input token"
+  []
+  (-> (by-id "token") (.-value)))
+
 (defn- after-load-games
   "After the load games call"
   [data]
@@ -27,11 +32,6 @@
   [data]
   (state/set-state :loading false)
   (state/set-error :auth-fail (str (data :status) "  " (data :message))))
-
-(defn- get-token
-  "Gets the current input token"
-  []
-  (-> (by-id "token") (.-value)))
 
 (defn- check-token
   "Processes the inserted token"
