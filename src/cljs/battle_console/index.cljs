@@ -5,6 +5,8 @@
             [om.dom :as dom :include-macros true]
             [secretary.core :as secretary :refer-macros [defroute]]))
 
+(enable-console-print!)
+
 (defn handler
   "Handles the root page and asks for the token"
   []
