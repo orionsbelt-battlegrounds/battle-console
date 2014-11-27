@@ -5,9 +5,11 @@
             [battle-console.index :as index]
             [battle-console.games :as games]
             [battle-console.game :as game]
+            [battle-console.state :as state]
             [secretary.core :as secretary :refer-macros [defroute]])
   (:import goog.History
            goog.history.EventType))
+
 
 (secretary/set-config! :prefix "#")
 
@@ -27,4 +29,6 @@
 
 (defn main
   []
-  (secretary/dispatch! "/login"))
+  (if-let [current (state/current-page)]
+    (secretary/dispatch! current)
+    (secretary/dispatch! "/login")))
