@@ -26,7 +26,6 @@
   [data]
   (state/set-state :loading false)
   (state/set-state :token (get-token))
-  (state/set-state :games-data data)
   (secretary/dispatch! "/games"))
 
 (defn- error-loading-games
@@ -39,7 +38,7 @@
   "Processes the inserted token"
   []
   (let [token (get-token)
-        url (str "http://api.orionsbelt.eu/player/latest-games?token=" token)]
+        url (str "http://api.orionsbelt.eu/auth/enforce?token=" token)]
     (state/set-state :loading true)
     (state/clear-error :auth-fail)
     (GET url {:handler after-load-games
