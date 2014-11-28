@@ -1,0 +1,11 @@
+git co gh-pages
+git merge master
+script/build-production
+cp resources/public/index.html .
+cp resources/public/js/app.js js/
+cp resources/public/js/out.js.map js/
+cp -R resources/public/themes .
+git add .
+git ci -m "Generate deploy"
+git push origin gh-pages
+git co master
