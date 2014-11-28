@@ -1,0 +1,2 @@
+lein cljsbuild clean
+lein cljsbuild auto
