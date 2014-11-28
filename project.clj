@@ -9,7 +9,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2371" :scope "provided"]
                  [ring "1.3.1"]
-                 [compojure "1.2.0"]
+                 [compojure "1.2.1"]
                  [enlive "1.1.5"]
                  [om "0.7.3"]
                  [clj-time "0.8.0"]
@@ -18,7 +18,7 @@
                  [cljs-ajax "0.3.3"]
                  [secretary "1.2.1"]
                  [com.cemerick/piggieback "0.1.3"]
-                 [weasel "0.4.0-SNAPSHOT"]
+                 [weasel "0.4.2"]
                  [leiningen "2.5.0"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
