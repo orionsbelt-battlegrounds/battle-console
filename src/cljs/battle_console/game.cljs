@@ -69,6 +69,22 @@
                 (dom/td nil unit)
                 (dom/td nil quantity)))))))))
 
+(defn- render-board-cell
+  "Renders a board's cell"
+  [game x y]
+  (dom/p #js {:className "boardCoords"} (str "[" x " " y "]")))
+
+(defn- render-board
+  "Renders the board"
+  [game]
+  (dom/div #js {:className "col-lg-8"}
+    (dom/div #js {:className "bs-component"}
+      (apply dom/table #js {:className "table table-striped table-hover"}
+        (for [y (range 1 9)]
+          (apply dom/tr nil
+            (for [x (range 1 9)]
+              (dom/td nil (render-board-cell game x y)))))))))
+
 (defn- render-game
   "Renders the index page"
   [state owner]
@@ -78,6 +94,10 @@
         (dom/div nil msg)
         (dom/div nil
                  (game-header (state :game-data))
+                 (dom/div #js {:className "row"}
+                   (dom/div #js {:className "col-lg-2"} "")
+                   (render-board (state :game-data))
+                   (dom/div #js {:className "col-lg-2"} ""))
                  (game-stash (state :game-data))))
       (dom/div #js {:className "hide"}))))
 
