@@ -9,6 +9,7 @@
   "After game was loaded"
   [data]
   (state/set-state :loading-game nil)
+  (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
   (state/set-state :game-data data))
 
 (defn- error-loading
@@ -54,18 +55,40 @@
 (defn- game-stash
   "Shows the current stash if available"
   [game]
-  (dom/div #js {:className "row"}
-    (dom/div #js {:className "col-lg-4"}
-      (dom/div #js {:className "bs-component"}
-        (apply dom/table #js {:className "table table-striped table-hover"}
-          (dom/caption nil "Stash")
-          (dom/tr nil
-            (dom/th nil "Unit")
-            (dom/th nil "Quantity"))
-          (for [[unit quantity] (get-stash game)]
+  (let [stash (get-stash game)]
+    (dom/div #js {:className "row"}
+      (dom/div #js {:className "col-lg-3"}
+        (dom/div #js {:className "bs-component"}
+          (apply dom/table #js {:className "table table-striped table-hover"}
+            (dom/caption nil "Stash")
             (dom/tr nil
-              (dom/td nil unit)
-              (dom/td nil quantity))))))))
+              (dom/th nil "Unit")
+              (dom/th nil "Quantity"))
+            (for [[unit quantity] stash]
+              (dom/tr nil
+                (dom/td nil unit)
+                (dom/td nil quantity)))))))))
+
+(defn- render-board-cell
+  "Renders a board's cell"
+  [game x y]
+  (dom/p #js {:className "boardCoords"} (str "[" x " " y "]")))
+
+(defn- render-board
+  "Renders the board"
+  [game]
+  (dom/div #js {:className "col-lg-8"}
+    (dom/div #js {:className "bs-component"}
+      (apply dom/table #js {:className "table table-striped table-hover"}
+        (for [y (range 1 9)]
+          (apply dom/tr nil
+            (for [x (range 1 9)]
+              (dom/td nil (render-board-cell game x y)))))))))
+
+(defn- render-player-roaster
+  "Renders the player's roaster"
+  [game]
+  "")
 
 (defn- render-game
   "Renders the index page"
@@ -76,6 +99,10 @@
         (dom/div nil msg)
         (dom/div nil
                  (game-header (state :game-data))
+                 (dom/div #js {:className "row"}
+                   (dom/div #js {:className "col-lg-2"} (render-player-roaster state))
+                   (render-board (state :game-data))
+                   (dom/div #js {:className "col-lg-2"} ""))
                  (game-stash (state :game-data))))
       (dom/div #js {:className "hide"}))))
 

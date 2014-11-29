@@ -25,6 +25,7 @@
   "After the load games call"
   [data]
   (state/set-state :loading false)
+  (state/set-state :username (get-in data ["claims" "iss"]))
   (state/set-state :token (get-token))
   (secretary/dispatch! "/games"))
 

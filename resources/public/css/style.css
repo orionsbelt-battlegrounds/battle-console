@@ -1,3 +1,6 @@
 p.blue {
   color: #6c94be;
 }
+.boardCoords {
+  size: 8px;
+}
