@@ -85,6 +85,11 @@
             (for [x (range 1 9)]
               (dom/td nil (render-board-cell game x y)))))))))
 
+(defn- render-player-roaster
+  "Renders the player's roaster"
+  [game]
+  "")
+
 (defn- render-game
   "Renders the index page"
   [state owner]
@@ -95,7 +100,7 @@
         (dom/div nil
                  (game-header (state :game-data))
                  (dom/div #js {:className "row"}
-                   (dom/div #js {:className "col-lg-2"} "")
+                   (dom/div #js {:className "col-lg-2"} (render-player-roaster state))
                    (render-board (state :game-data))
                    (dom/div #js {:className "col-lg-2"} ""))
                  (game-stash (state :game-data))))
