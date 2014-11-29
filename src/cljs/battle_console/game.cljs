@@ -9,6 +9,7 @@
   "After game was loaded"
   [data]
   (state/set-state :loading-game nil)
+  (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
   (state/set-state :game-data data))
 
 (defn- error-loading
@@ -54,18 +55,19 @@
 (defn- game-stash
   "Shows the current stash if available"
   [game]
-  (dom/div #js {:className "row"}
-    (dom/div #js {:className "col-lg-4"}
-      (dom/div #js {:className "bs-component"}
-        (apply dom/table #js {:className "table table-striped table-hover"}
-          (dom/caption nil "Stash")
-          (dom/tr nil
-            (dom/th nil "Unit")
-            (dom/th nil "Quantity"))
-          (for [[unit quantity] (get-stash game)]
+  (let [stash (get-stash game)]
+    (dom/div #js {:className "row"}
+      (dom/div #js {:className "col-lg-3"}
+        (dom/div #js {:className "bs-component"}
+          (apply dom/table #js {:className "table table-striped table-hover"}
+            (dom/caption nil "Stash")
             (dom/tr nil
-              (dom/td nil unit)
-              (dom/td nil quantity))))))))
+              (dom/th nil "Unit")
+              (dom/th nil "Quantity"))
+            (for [[unit quantity] stash]
+              (dom/tr nil
+                (dom/td nil unit)
+                (dom/td nil quantity)))))))))
 
 (defn- render-game
   "Renders the index page"
