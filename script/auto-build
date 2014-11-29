@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 lein cljsbuild clean
 lein cljsbuild auto
+=======
+lein cljsbuild clean && lein cljsbuild auto
+>>>>>>> master

@@ -26,14 +26,33 @@
     (GET url {:handler game-loaded
               :error-handler error-loading})))
 
+(defn game-header
+  "Shows the game header"
+  [game]
+  (dom/div #js {:className "row"}
+    (dom/div #js {:className "col-lg-12"}
+      (dom/div #js {:className "bs-component"}
+        (dom/table #js {:className "table table-striped table-hover"}
+          (dom/tr nil
+            (dom/th nil "Turn")
+            (dom/th nil "State")
+            (dom/th nil "Match")
+            (dom/th nil "Id"))
+          (dom/tr nil
+            (dom/td nil "1")
+            (dom/td nil (get-in game ["board" "state"]))
+            (dom/td nil (str (get-in game ["p1" "name"]) " vs " (get-in game ["p2" "name"])))
+            (dom/td nil (get game "_id"))))))))
+
 (defn- render-game
   "Renders the index page"
-  [app owner]
+  [state owner]
   (om/component
     (if (= :game (state/current-page))
       (if-let [msg (state/get-state :loading-game)]
         (dom/div nil msg)
-        (dom/div nil "GAME HERE"))
+        (dom/div nil
+                 (game-header (state :game-data))))
       (dom/div #js {:className "hide"}))))
 
 (defn- register-renderer
