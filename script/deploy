@@ -1,4 +1,5 @@
 git co gh-pages
+git pull origin gh-pages
 git merge master
 script/build-production
 cp resources/public/index.html .
