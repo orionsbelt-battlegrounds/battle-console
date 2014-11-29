@@ -47,7 +47,9 @@
 (defn- get-stash
   "Gets the current stash"
   [game]
-  (get-in game ["battle" "stash" "p1"]))
+  (or
+    (get-in game ["battle" "stash" "p1"])
+    (get-in game ["battle" "stash" "p2"])))
 
 (defn- game-stash
   "Shows the current stash if available"
