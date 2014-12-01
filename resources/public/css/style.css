@@ -2,5 +2,20 @@ p.blue {
   color: #6c94be;
 }
 .boardCoords {
-  size: 8px;
+  font-size: 8px;
+}
+.h100 {
+  height: 100%;
+}
+.roaster {
+  position: relative;
+  height: 400px;
+}
+.roaster .p1 {
+  position: absolute;
+  bottom: 10px;
+}
+.roaster .p2 {
+  position: absolute;
+  top: 65px;
 }

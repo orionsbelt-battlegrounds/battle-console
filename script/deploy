@@ -3,6 +3,7 @@ git pull origin gh-pages
 git merge master
 script/build-production
 cp resources/public/index.html .
+cp resources/public/css/style.css css/
 cp resources/public/js/app.js js/
 cp resources/public/js/out.js.map js/
 cp -R resources/public/themes .

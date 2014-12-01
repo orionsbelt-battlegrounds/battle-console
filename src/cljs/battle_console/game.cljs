@@ -85,10 +85,25 @@
             (for [x (range 1 9)]
               (dom/td nil (render-board-cell game x y)))))))))
 
+(defn- get-name-for
+  "Gets the name to be on the given position"
+  [game position]
+  (if (= "p1" (name position) (get-in game [:game-data "viewed-by" "player-code"]))
+    (get-in game [:game-data "p1" "name"])
+    (get-in game [:game-data "p2" "name"])))
+
 (defn- render-player-roaster
   "Renders the player's roaster"
   [game]
-  "")
+  (dom/div #js {:className "roaster h100"}
+           (dom/div #js {:className "p2"}
+             (dom/div #js {:className "p1 panel panel-warning"}
+               (dom/div #js {:className "panel-heading"}
+                (dom/h3 #js {:className "panel-title"} (get-name-for game :p2)))))
+           (dom/div #js {:className "p1"} 
+             (dom/div #js {:className "p1 panel panel-success"}
+               (dom/div #js {:className "panel-heading"}
+                (dom/h3 #js {:className "panel-title"} (get-name-for game :p1)))))))
 
 (defn- render-game
   "Renders the index page"
@@ -100,7 +115,7 @@
         (dom/div nil
                  (game-header (state :game-data))
                  (dom/div #js {:className "row"}
-                   (dom/div #js {:className "col-lg-2"} (render-player-roaster state))
+                   (dom/div #js {:className "col-lg-2 h100"} (render-player-roaster state))
                    (render-board (state :game-data))
                    (dom/div #js {:className "col-lg-2"} ""))
                  (game-stash (state :game-data))))
