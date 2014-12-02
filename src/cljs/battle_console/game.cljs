@@ -105,6 +105,18 @@
                (dom/div #js {:className "panel-heading"}
                 (dom/h3 #js {:className "panel-title"} (get-name-for game :p1)))))))
 
+(defn- add-action
+  "Processes a new action"
+  [])
+
+(defn- render-action-console
+  "Renders the action management console"
+  [state]
+  (dom/div #js {:className (str "form-group ")}
+    (dom/label #js {:for "newAction" :className "control-label"} "Action:")
+    (dom/input #js {:type "text" :id "newAction" :className "form-control"})
+    (dom/button #js {:onClick add-action :className "btn btn-default"} "Add")))
+
 (defn- render-game
   "Renders the index page"
   [state owner]
@@ -117,7 +129,7 @@
                  (dom/div #js {:className "row"}
                    (dom/div #js {:className "col-lg-2 h100"} (render-player-roaster state))
                    (render-board (state :game-data))
-                   (dom/div #js {:className "col-lg-2"} ""))
+                   (dom/div #js {:className "col-lg-2"} (render-action-console state)))
                  (game-stash (state :game-data))))
       (dom/div #js {:className "hide"}))))
 
