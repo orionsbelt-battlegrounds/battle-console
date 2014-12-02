@@ -107,7 +107,8 @@
 
 (defn- add-action
   "Processes a new action"
-  [])
+  []
+  (GET "http://rules.api.orionsbelt.eu/game/turn/p1?context={}"))
 
 (defn- render-action-console
   "Renders the action management console"
