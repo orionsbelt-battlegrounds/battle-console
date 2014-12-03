@@ -105,10 +105,20 @@
                (dom/div #js {:className "panel-heading"}
                 (dom/h3 #js {:className "panel-title"} (get-name-for game :p1)))))))
 
+(defn- action-added
+  "Added action"
+  [data]
+  (println data))
+
 (defn- add-action
   "Processes a new action"
-  []
-  (GET "http://rules.api.orionsbelt.eu/game/turn/p1?context={}"))
+  [ev]
+  (let [game (-> (state/get-state :game-data)
+                 (assoc :actions [[:deploy 100 :toxic [8, 8]]]))
+        jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
+        url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
+    (GET url {:handler action-added
+              :error-handler error-loading})))
 
 (defn- render-action-console
   "Renders the action management console"
