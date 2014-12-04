@@ -20,7 +20,7 @@ goog.addDependency("../clojure/walk.js", ['clojure.walk'], ['cljs.core']);
 goog.addDependency("../secretary/core.js", ['secretary.core'], ['cljs.core', 'clojure.string', 'clojure.walk']);
 goog.addDependency("../battle_console/state.js", ['battle_console.state'], ['cljs.core']);
 goog.addDependency("../battle_console/index.js", ['battle_console.index'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state']);
-goog.addDependency("../battle_console/game.js", ['battle_console.game'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state']);
+goog.addDependency("../battle_console/game.js", ['battle_console.game'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state', 'cljs.reader']);
 goog.addDependency("../battle_console/games.js", ['battle_console.games'], ['ajax.core', 'cljs.core', 'om.dom', 'om.core', 'secretary.core', 'battle_console.state']);
 goog.addDependency("../battle_console/core.js", ['battle_console.core'], ['cljs.core', 'om.dom', 'goog.history.EventType', 'goog.History', 'battle_console.index', 'battle_console.game', 'battle_console.games', 'om.core', 'secretary.core', 'battle_console.state', 'goog.events']);
 goog.addDependency("../clojure/browser/event.js", ['clojure.browser.event'], ['cljs.core', 'goog.events.EventTarget', 'goog.events.EventType', 'goog.events']);

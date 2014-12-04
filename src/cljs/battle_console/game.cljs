@@ -3,6 +3,7 @@
             [ajax.core :refer [GET POST]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [cljs.reader :as reader]
             [secretary.core :as secretary :refer-macros [defroute]]))
 
 (defn- game-loaded
@@ -105,6 +106,14 @@
                (dom/div #js {:className "panel-heading"}
                 (dom/h3 #js {:className "panel-title"} (get-name-for game :p1)))))))
 
+(defn by-id [id]
+  (.getElementById js/document (name id)))
+
+(defn- get-action
+  "Gets the current entered action"
+  []
+  (-> (by-id "newAction") (.-value)))
+
 (defn- action-added
   "Added action"
   [data]
@@ -113,10 +122,13 @@
 (defn- add-action
   "Processes a new action"
   [ev]
-  (let [game (-> (state/get-state :game-data)
-                 (assoc :actions [[:deploy 100 :toxic [8, 8]]]))
+  (let [action (reader/read-string (get-action))
+        game (-> (state/get-state :game-data)
+                 (assoc :actions [action]))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
+    (println action)
+    (println (.stringify js/JSON (clj->js game)))
     (GET url {:handler action-added
               :error-handler error-loading})))
 
