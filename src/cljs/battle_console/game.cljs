@@ -114,11 +114,19 @@
   []
   (-> (by-id "newAction") (.-value)))
 
+(defn- reset-actions
+  "Reset the current actions being applied"
+  []
+  (state/set-state :current-actions []))
+
 (defn- action-added
   "Added action"
   [data]
   (let [actions (or (state/get-state :current-actions) [])
-        current-action (state/get-state :processing-action)]
+        current-action (state/get-state :processing-action)
+        new-actions (conj actions current-action)]
+    (state/set-state :current-actions new-actions)
+    (println new-actions)
     (state/set-state :processing-action nil))
   (println data))
 
@@ -148,7 +156,8 @@
   (dom/div #js {:className (str "form-group ")}
     (dom/label #js {:for "newAction" :className "control-label"} "Action:")
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
-    (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-default" :disabled (add-action-disabled state)} "Add")))
+    (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
+    (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")))
 
 (defn- render-game
   "Renders the index page"
