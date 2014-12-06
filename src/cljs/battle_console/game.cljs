@@ -124,8 +124,10 @@
   [data]
   (let [actions (or (state/get-state :current-actions) [])
         current-action (state/get-state :processing-action)
-        new-actions (conj actions current-action)]
+        new-actions (conj actions current-action)
+        current-game (state/get-state :game-data)]
     (println data)
+    (state/set-state :game-data (assoc current-game "battle" (get data "board")))
     (state/set-state :current-actions new-actions)
     (state/set-state :processing-action nil)))
 
