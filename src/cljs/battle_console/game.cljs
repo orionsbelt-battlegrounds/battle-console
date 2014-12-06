@@ -117,6 +117,9 @@
 (defn- action-added
   "Added action"
   [data]
+  (let [actions (or (state/get-state :current-actions) [])
+        current-action (state/get-state :processing-action)]
+    (state/set-state :processing-action nil))
   (println data))
 
 (defn- add-action
@@ -127,10 +130,17 @@
                  (assoc :actions [action]))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
-    (println action)
+    (state/set-state :processing-action action)
     (println (.stringify js/JSON (clj->js game)))
     (GET url {:handler action-added
               :error-handler error-loading})))
+
+(defn- add-action-disabled
+  "Checks if the button should be disabled"
+  [state]
+  (if (state :processing-action)
+    "disabled"
+    ""))
 
 (defn- render-action-console
   "Renders the action management console"
@@ -138,7 +148,7 @@
   (dom/div #js {:className (str "form-group ")}
     (dom/label #js {:for "newAction" :className "control-label"} "Action:")
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
-    (dom/button #js {:onClick add-action :className "btn btn-default"} "Add")))
+    (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-default" :disabled (add-action-disabled state)} "Add")))
 
 (defn- render-game
   "Renders the index page"
