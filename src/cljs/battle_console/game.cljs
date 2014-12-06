@@ -125,23 +125,29 @@
   (let [actions (or (state/get-state :current-actions) [])
         current-action (state/get-state :processing-action)
         new-actions (conj actions current-action)]
+    (println data)
     (state/set-state :current-actions new-actions)
-    (println new-actions)
-    (state/set-state :processing-action nil))
-  (println data))
+    (state/set-state :processing-action nil)))
+
+(defn- error-loading-action
+  "Error loading action"
+  []
+  (state/set-state :processing-action nil))
 
 (defn- add-action
   "Processes a new action"
   [ev]
   (let [action (reader/read-string (get-action))
+        current-actions (or (state/get-state :current-actions) [])
+        new-actions (conj current-actions action)
         game (-> (state/get-state :game-data)
-                 (assoc :actions [action]))
+                 (assoc :actions new-actions))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
     (state/set-state :processing-action action)
-    (println (.stringify js/JSON (clj->js game)))
+    (println (.stringify js/JSON (clj->js new-actions)))
     (GET url {:handler action-added
-              :error-handler error-loading})))
+              :error-handler error-loading-action})))
 
 (defn- add-action-disabled
   "Checks if the button should be disabled"
