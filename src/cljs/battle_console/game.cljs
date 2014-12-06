@@ -154,6 +154,7 @@
   "Renders the action management console"
   [state]
   (dom/div #js {:className (str "form-group ")}
+    (apply dom/div nil (map (fn [raw] (dom/div #js {:className "label label-info action-label"} (.stringify js/JSON (clj->js raw)))) (state :current-actions)))
     (dom/label #js {:for "newAction" :className "control-label"} "Action:")
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")

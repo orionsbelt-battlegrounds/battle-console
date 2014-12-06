@@ -22,3 +22,7 @@ p.blue {
 #newAction {
   font-size: 10px;
 }
+.action-label {
+  display: block;
+  margin-bottom: 2px;
+}
