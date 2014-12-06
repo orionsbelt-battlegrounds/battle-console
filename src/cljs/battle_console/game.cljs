@@ -75,9 +75,12 @@
 (defn- render-board-cell
   "Renders a board's cell"
   [game x y]
-  (let [element (get-in game ["board" "elements"])]
-    #_(println element))
-  (dom/p #js {:className "boardCoords"} (str "[" x " " y "]")))
+  (let [coordCode (str "[" x " " y "]")
+        element (get-in game ["battle" "elements" coordCode])]
+    (dom/div nil
+      (dom/p #js {:className "boardCoords"} coordCode)
+      (dom/p #js {:className "boardUnit"} (or (get element "unit") "-"))
+      (dom/p #js {:className "boardQuantity"} (or (get element "quantity") 0)))))
 
 (defn- render-board
   "Renders the board"
@@ -86,7 +89,7 @@
     (dom/div #js {:className "bs-component"}
       (apply dom/table #js {:className "table table-striped table-hover"}
         (for [y (range 1 9)]
-          (apply dom/tr nil
+          (apply dom/tr #js {:className "active"}
             (for [x (range 1 9)]
               (dom/td nil (render-board-cell game x y)))))))))
 
