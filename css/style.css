@@ -3,6 +3,15 @@ p.blue {
 }
 .boardCoords {
   font-size: 8px;
+  margin: 0;
+}
+.boardQuantity {
+  font-size: 8px;
+  margin: 0;
+}
+.boardUnit {
+  font-size: 12px;
+  margin: 0;
 }
 .h100 {
   height: 100%;
@@ -21,4 +30,8 @@ p.blue {
 }
 #newAction {
   font-size: 10px;
+}
+.action-label {
+  display: block;
+  margin-bottom: 2px;
 }
