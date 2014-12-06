@@ -11,6 +11,7 @@
   [data]
   (state/set-state :loading-game nil)
   (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
+  (state/set-state :original-game-data data)
   (state/set-state :game-data data))
 
 (defn- error-loading
@@ -56,23 +57,26 @@
 (defn- game-stash
   "Shows the current stash if available"
   [game]
-  (let [stash (get-stash game)]
+  (let [stash (get-stash (state/get-state :game-data))]
     (dom/div #js {:className "row"}
       (dom/div #js {:className "col-lg-3"}
         (dom/div #js {:className "bs-component"}
-          (apply dom/table #js {:className "table table-striped table-hover"}
+          (dom/table #js {:className "table table-striped table-hover"}
             (dom/caption nil "Stash")
-            (dom/tr nil
-              (dom/th nil "Unit")
-              (dom/th nil "Quantity"))
-            (for [[unit quantity] stash]
+            (apply dom/tbody nil
               (dom/tr nil
-                (dom/td nil unit)
-                (dom/td nil quantity)))))))))
+                (dom/th nil "Unit")
+                (dom/th nil "Quantity"))
+              (for [[unit quantity] stash]
+                (dom/tr nil
+                  (dom/td nil unit)
+                  (dom/td nil quantity))))))))))
 
 (defn- render-board-cell
   "Renders a board's cell"
   [game x y]
+  (let [element (get-in game ["board" "elements"])]
+    #_(println element))
   (dom/p #js {:className "boardCoords"} (str "[" x " " y "]")))
 
 (defn- render-board
@@ -117,6 +121,7 @@
 (defn- reset-actions
   "Reset the current actions being applied"
   []
+  (state/set-state :game-data (state/get-state :original-game-data))
   (state/set-state :current-actions []))
 
 (defn- action-added
@@ -125,11 +130,13 @@
   (let [actions (or (state/get-state :current-actions) [])
         current-action (state/get-state :processing-action)
         new-actions (conj actions current-action)
-        current-game (state/get-state :game-data)]
-    (println data)
-    (state/set-state :game-data (assoc current-game "battle" (get data "board")))
+        current-game (state/get-state :game-data)
+        updated-game (assoc current-game "battle" (get data "board"))]
+    (println updated-game)
+    (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
-    (state/set-state :processing-action nil)))
+    (state/set-state :processing-action nil)
+    ))
 
 (defn- error-loading-action
   "Error loading action"
@@ -142,7 +149,7 @@
   (let [action (reader/read-string (get-action))
         current-actions (or (state/get-state :current-actions) [])
         new-actions (conj current-actions action)
-        game (-> (state/get-state :game-data)
+        game (-> (state/get-state :original-game-data)
                  (assoc :actions new-actions))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
