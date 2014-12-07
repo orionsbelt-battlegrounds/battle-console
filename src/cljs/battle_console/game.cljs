@@ -72,12 +72,21 @@
                   (dom/td nil unit)
                   (dom/td nil quantity))))))))))
 
+(defn- get-element-css
+  "Gets a CSS class for the given element"
+  [element]
+  (condp = (get element "player")
+    "p1" "success"
+    "p2" "warning"
+    nil ""))
+
 (defn- render-board-cell
   "Renders a board's cell"
   [game x y]
   (let [coordCode (str "[" x " " y "]")
-        element (get-in game ["battle" "elements" coordCode])]
-    (dom/div nil
+        element (get-in game ["battle" "elements" coordCode])
+        css (get-element-css element)]
+    (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
       (dom/p #js {:className "boardUnit"} (or (get element "unit") "-"))
       (dom/p #js {:className "boardQuantity"} (or (get element "quantity") 0)))))
@@ -91,7 +100,7 @@
         (for [y (range 1 9)]
           (apply dom/tr #js {:className "active"}
             (for [x (range 1 9)]
-              (dom/td nil (render-board-cell game x y)))))))))
+              (render-board-cell game x y))))))))
 
 (defn- get-name-for
   "Gets the name to be on the given position"
