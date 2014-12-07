@@ -6,13 +6,25 @@
             [cljs.reader :as reader]
             [secretary.core :as secretary :refer-macros [defroute]]))
 
+(defn- normalize-board
+  "Uses p2-focused-board if present"
+  [data]
+  (println "--normalize-board")
+  (println data)
+  (if (data :p2-focused-board)
+    (-> data
+        (assoc :board (data :p2-focused-board))
+        (dissoc :p2-focused-board))
+    data))
+
 (defn- game-loaded
   "After game was loaded"
   [data]
   (state/set-state :loading-game nil)
   (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
-  (state/set-state :original-game-data data)
-  (state/set-state :game-data data))
+  (let [final-data (normalize-board data)]
+    (state/set-state :original-game-data final-data)
+    (state/set-state :game-data final-data)))
 
 (defn- error-loading
   "Error loading game"
@@ -50,9 +62,10 @@
 (defn- get-stash
   "Gets the current stash"
   [game]
-  (or
-    (get-in game ["battle" "stash" "p1"])
-    (get-in game ["battle" "stash" "p2"])))
+  (println game)
+  (if (empty? (get-in game ["battle" "stash" "p1"]))
+    (get-in game ["battle" "stash" "p2"])
+    (get-in game ["battle" "stash" "p1"])))
 
 (defn- game-stash
   "Shows the current stash if available"
@@ -143,7 +156,7 @@
         current-action (state/get-state :processing-action)
         new-actions (conj actions current-action)
         current-game (state/get-state :game-data)
-        updated-game (assoc current-game "battle" (get data "board"))]
+        updated-game (assoc current-game "battle" (or (get data "p2-focused-board") (get data "board")))]
     (println updated-game)
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
@@ -161,10 +174,13 @@
   (let [action (reader/read-string (get-action))
         current-actions (or (state/get-state :current-actions) [])
         new-actions (conj current-actions action)
+        player-code "p2"
         game (-> (state/get-state :original-game-data)
-                 (assoc :actions new-actions))
+                 (assoc :actions new-actions)
+                 (assoc :p2-focused-board (= player-code "p2"))
+                 (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
-        url (str "http://rules.api.orionsbelt.eu/game/turn/p1?context=" jsgame)]
+        url (str "http://rules.api.orionsbelt.eu/game/turn/" player-code "?context=" jsgame)]
     (state/set-state :processing-action action)
     (println (.stringify js/JSON (clj->js new-actions)))
     (GET url {:handler action-added
