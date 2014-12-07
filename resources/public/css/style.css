@@ -13,21 +13,6 @@ p.blue {
   font-size: 12px;
   margin: 0;
 }
-.h100 {
-  height: 100%;
-}
-.roaster {
-  position: relative;
-  height: 400px;
-}
-.roaster .p1 {
-  position: absolute;
-  bottom: 10px;
-}
-.roaster .p2 {
-  position: absolute;
-  top: 65px;
-}
 #newAction {
   font-size: 10px;
 }
