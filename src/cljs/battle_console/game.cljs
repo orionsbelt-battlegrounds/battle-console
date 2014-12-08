@@ -85,10 +85,21 @@
                   (dom/td nil unit)
                   (dom/td nil quantity))))))))))
 
+(defn- get-player-position
+  "Gets the position of a player for a given game"
+  [game player]
+  (if (empty? player)
+    nil
+    (let [player-code (get-in game ["viewed-by" "player-code"])]
+      (cond
+        (= "p1" player-code player) "p1"
+        (= "p2" player-code player) "p1"
+        :else "p2"))))
+
 (defn- get-element-css
   "Gets a CSS class for the given element"
-  [element]
-  (condp = (get element "player")
+  [game element]
+  (condp = (get-player-position game (get element "player"))
     "p1" "success"
     "p2" "warning"
     nil ""))
@@ -98,7 +109,7 @@
   [game x y]
   (let [coordCode (str "[" x " " y "]")
         element (get-in game ["battle" "elements" coordCode])
-        css (get-element-css element)]
+        css (get-element-css game element)]
     (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
       (dom/p #js {:className "boardUnit"} (or (get element "unit") "-"))
@@ -115,12 +126,24 @@
             (for [x (range 1 9)]
               (render-board-cell game x y))))))))
 
+(defn- player-switch
+  "Switches players"
+  [player]
+  (if (= player "p1")
+    "p2"
+    "p1"))
+
 (defn- get-name-for
   "Gets the name to be on the given position"
   [game position]
-  (if (= "p1" (name position) (get-in game [:game-data "viewed-by" "player-code"]))
-    (get-in game [:game-data "p1" "name"])
-    (get-in game [:game-data "p2" "name"])))
+  (let [player-code (get-in game [:game-data "viewed-by" "player-code"])
+        pos (name position)]
+    (println "get-name-for " pos " code: " player-code)
+    (cond
+      (= "p1" pos player-code) (get-in game [:game-data "p1" "name"])
+      (= ["p2" pos player-code] ["p2" "p1" "p2"]) (get-in game [:game-data "p2" "name"])
+      (= ["p2" pos player-code] ["p2" "p2" "p1"]) (get-in game [:game-data "p2" "name"])
+      :else (get-in game [:game-data (player-switch pos) "name"]))))
 
 (defn- render-player-roaster
   "Renders the player's roaster"
