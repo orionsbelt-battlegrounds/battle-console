@@ -71,7 +71,7 @@
                     (dom/input #js {:type "text" :id "token" :className "form-control"})
                     (dom/button #js {:onClick check-token :className "btn btn-default"} (button-caption))
                     (dom/p nil (str "donbonifacio eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkb25ib25pZmFjaW8iLCJleHAiOjE0MTQ2MTYxMTIsImlhdCI6MTQxNDcwMjUxMn0.lisfjmr4ShsYJt2FX8FfJrQ828HVbPGFKF5BL9GMEbw"))
-                    (dom/p nil (str "Pyro eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOm51bGwsImV4cCI6MTQxOTExMTE1OCwiaWF0IjoxNDE4MjQ3MTU4fQ.Am84fZKkbg9kyUXxkDuLXfazYMZ_F2bHKqcFcMw_Y-8"))))))
+                    (dom/p nil (str "Pyro eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJQeXJvIiwiZXhwIjoxNDE5MTEzNDIzLCJpYXQiOjE0MTgyNDk0MjN9.W1Vvfb34tECRP2DzmHiN0ICYDZEC-FmwtJZAK0hDAKg"))))))
 
 (defn- register-renderer
   "Register an Om renderer for this page"
