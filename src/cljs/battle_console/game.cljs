@@ -217,6 +217,16 @@
     "disabled"
     ""))
 
+(defn- deploy-disabled
+  "Checks if the deploy button should be disabled"
+  [state]
+  (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
+    (cond
+      (state :processing-action) "disabled"
+      (not= "deploy" (get-in state [:original-game-data "battle" "state"])) "disabled"
+      (empty? (get-in state [:game-data "battle" "stash" player-code])) ""
+      :else "disabled")))
+
 (defn- render-action-console
   "Renders the action management console"
   [state]
@@ -225,7 +235,8 @@
     (dom/label #js {:for "newAction" :className "control-label"} "Action:")
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
-    (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")))
+    (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")
+    (dom/button #js {:id "deployButton" :onClick add-action :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
 
 (defn- render-game
   "Renders the index page"
