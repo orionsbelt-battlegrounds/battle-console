@@ -1,6 +1,6 @@
 (ns battle-console.game
   (:require [battle-console.state :as state]
-            [ajax.core :refer [GET POST]]
+            [ajax.core :refer [GET POST, PUT]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.reader :as reader]
@@ -38,6 +38,7 @@
   (let [token (state/get-state :token)
         url (str "http://api.orionsbelt.eu/game/" (params :id) "?token=" token)]
     (state/set-state :loading-game (str "Loading game " (params :id) "..."))
+    (state/set-state :game-id (params :id))
     (GET url {:handler game-loaded
               :error-handler error-loading})))
 
@@ -62,10 +63,7 @@
 (defn- get-stash
   "Gets the current stash"
   [game]
-  (println game)
-  (if (empty? (get-in game ["battle" "stash" "p1"]))
-    (get-in game ["battle" "stash" "p2"])
-    (get-in game ["battle" "stash" "p1"])))
+  (get-in game ["battle" "stash" (get-in game ["viewed-by" "player-code"])]))
 
 (defn- game-stash
   "Shows the current stash if available"
@@ -191,6 +189,21 @@
   []
   (state/set-state :processing-action nil))
 
+(defn- deploy-game
+  "Deploys a game"
+  [ev]
+  (let [actions (or (state/get-state :current-actions) [])
+        game (state/get-state :original-game-data)
+        player-code (get-in game ["viewed-by" "player-code"])
+        token (state/get-state :token)
+        game-id (state/get-state :game-id)
+        url (str "http://api.orionsbelt.eu/game/" game-id "/deploy?token=" token)]
+    (state/set-state :processing-action actions)
+    (PUT url {:params {:actions actions}
+              :format :json
+              :handler action-added
+              :error-handler error-loading-action})))
+
 (defn- add-action
   "Processes a new action"
   [ev]
@@ -236,7 +249,7 @@
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
     (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")
-    (dom/button #js {:id "deployButton" :onClick add-action :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
+    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
 
 (defn- render-game
   "Renders the index page"
