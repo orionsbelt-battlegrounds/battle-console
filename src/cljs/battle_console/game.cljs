@@ -63,7 +63,7 @@
 (defn- get-stash
   "Gets the current stash"
   [game]
-  (get-in game ["battle" "stash" (get-in game ["viewed-by" "player-code"])]))
+  (get-in game ["board" "stash" (get-in game ["viewed-by" "player-code"])]))
 
 (defn- game-stash
   "Shows the current stash if available"
@@ -106,7 +106,7 @@
   "Renders a board's cell"
   [game x y]
   (let [coordCode (str "[" x " " y "]")
-        element (get-in game ["battle" "elements" coordCode])
+        element (get-in game ["board" "elements" coordCode])
         css (get-element-css game element)]
     (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
@@ -177,7 +177,7 @@
         current-action (state/get-state :processing-action)
         new-actions (conj actions current-action)
         current-game (state/get-state :game-data)
-        updated-game (assoc current-game "battle" (or (get data "p2-focused-board") (get data "board")))]
+        updated-game (assoc current-game "board" (or (get data "p2-focused-board") (get data "board")))]
     (println updated-game)
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
@@ -188,6 +188,17 @@
   "Error loading action"
   []
   (state/set-state :processing-action nil))
+
+(defn- game-deployed
+  "After the game was deployed"
+  [data]
+  (println (state/get-state :game-data))
+  (println "--game deployed")
+  (println data)
+  (state/set-state :game-data data)
+  (state/set-state :current-actions nil)
+  (state/set-state :processing-action nil)
+    )
 
 (defn- deploy-game
   "Deploys a game"
@@ -201,7 +212,7 @@
     (state/set-state :processing-action actions)
     (PUT url {:params {:actions actions}
               :format :json
-              :handler action-added
+              :handler game-deployed
               :error-handler error-loading-action})))
 
 (defn- add-action
@@ -236,8 +247,8 @@
   (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
     (cond
       (state :processing-action) "disabled"
-      (not= "deploy" (get-in state [:original-game-data "battle" "state"])) "disabled"
-      (empty? (get-in state [:game-data "battle" "stash" player-code])) ""
+      (not= "deploy" (get-in state [:original-game-data "board" "state"])) "disabled"
+      (empty? (get-in state [:game-data "board" "stash" player-code])) ""
       :else "disabled")))
 
 (defn- render-action-console
