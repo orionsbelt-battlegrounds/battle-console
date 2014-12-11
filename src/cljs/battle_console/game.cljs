@@ -1,6 +1,6 @@
 (ns battle-console.game
   (:require [battle-console.state :as state]
-            [ajax.core :refer [GET POST]]
+            [ajax.core :refer [GET POST, PUT]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.reader :as reader]
@@ -38,6 +38,7 @@
   (let [token (state/get-state :token)
         url (str "http://api.orionsbelt.eu/game/" (params :id) "?token=" token)]
     (state/set-state :loading-game (str "Loading game " (params :id) "..."))
+    (state/set-state :game-id (params :id))
     (GET url {:handler game-loaded
               :error-handler error-loading})))
 
@@ -62,10 +63,7 @@
 (defn- get-stash
   "Gets the current stash"
   [game]
-  (println game)
-  (if (empty? (get-in game ["battle" "stash" "p1"]))
-    (get-in game ["battle" "stash" "p2"])
-    (get-in game ["battle" "stash" "p1"])))
+  (get-in game ["board" "stash" (get-in game ["viewed-by" "player-code"])]))
 
 (defn- game-stash
   "Shows the current stash if available"
@@ -108,7 +106,7 @@
   "Renders a board's cell"
   [game x y]
   (let [coordCode (str "[" x " " y "]")
-        element (get-in game ["battle" "elements" coordCode])
+        element (get-in game ["board" "elements" coordCode])
         css (get-element-css game element)]
     (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
@@ -179,7 +177,7 @@
         current-action (state/get-state :processing-action)
         new-actions (conj actions current-action)
         current-game (state/get-state :game-data)
-        updated-game (assoc current-game "battle" (or (get data "p2-focused-board") (get data "board")))]
+        updated-game (assoc current-game "board" (or (get data "p2-focused-board") (get data "board")))]
     (println updated-game)
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
@@ -190,6 +188,32 @@
   "Error loading action"
   []
   (state/set-state :processing-action nil))
+
+(defn- game-deployed
+  "After the game was deployed"
+  [data]
+  (println (state/get-state :game-data))
+  (println "--game deployed")
+  (println data)
+  (state/set-state :game-data data)
+  (state/set-state :current-actions nil)
+  (state/set-state :processing-action nil)
+    )
+
+(defn- deploy-game
+  "Deploys a game"
+  [ev]
+  (let [actions (or (state/get-state :current-actions) [])
+        game (state/get-state :original-game-data)
+        player-code (get-in game ["viewed-by" "player-code"])
+        token (state/get-state :token)
+        game-id (state/get-state :game-id)
+        url (str "http://api.orionsbelt.eu/game/" game-id "/deploy?token=" token)]
+    (state/set-state :processing-action actions)
+    (PUT url {:params {:actions actions}
+              :format :json
+              :handler game-deployed
+              :error-handler error-loading-action})))
 
 (defn- add-action
   "Processes a new action"
@@ -223,8 +247,8 @@
   (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
     (cond
       (state :processing-action) "disabled"
-      (not= "deploy" (get-in state [:original-game-data "battle" "state"])) "disabled"
-      (empty? (get-in state [:game-data "battle" "stash" player-code])) ""
+      (not= "deploy" (get-in state [:original-game-data "board" "state"])) "disabled"
+      (empty? (get-in state [:game-data "board" "stash" player-code])) ""
       :else "disabled")))
 
 (defn- render-action-console
@@ -236,7 +260,7 @@
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
     (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")
-    (dom/button #js {:id "deployButton" :onClick add-action :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
+    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
 
 (defn- render-game
   "Renders the index page"
