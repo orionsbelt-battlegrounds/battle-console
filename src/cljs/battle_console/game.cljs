@@ -251,12 +251,13 @@
         new-actions (conj current-actions action)
         game (state/get-state :raw-game-data)
         player-code (get-in game ["viewed-by" "player-code"])
+        player-context "p1"
         game (-> game
                  (assoc :actions new-actions)
                  (assoc :p2-focused-board (= player-code "p2"))
                  (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
-        url (str "http://rules.api.orionsbelt.eu/game/turn/" "p1" "?context=" jsgame)]
+        url (str "http://rules.api.orionsbelt.eu/game/turn/" player-context "?context=" jsgame)]
     (state/set-state :processing-action action)
     (GET url {:handler action-added
               :error-handler error-loading-action})))
