@@ -256,8 +256,7 @@
                  (assoc :p2-focused-board (= player-code "p2"))
                  (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
-        url (str "http://rules.api.orionsbelt.eu/game/turn/" player-code "?context=" jsgame)]
-    (println game)
+        url (str "http://rules.api.orionsbelt.eu/game/turn/" "p1" "?context=" jsgame)]
     (state/set-state :processing-action action)
     (GET url {:handler action-added
               :error-handler error-loading-action})))
