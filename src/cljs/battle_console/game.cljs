@@ -21,6 +21,7 @@
   (state/set-state :loading-game nil)
   (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
   (let [final-data (normalize-board data)]
+    (state/set-state :raw-game-data data)
     (state/set-state :original-game-data final-data)
     (state/set-state :game-data final-data)))
 
@@ -200,18 +201,17 @@
   []
   (state/set-state :processing-action nil))
 
+(defn- game-played
+  "After the game was deployed"
+  [data]
+  (game-loaded data)
+  (state/set-state :current-actions nil)
+  (state/set-state :processing-action nil))
+
 (defn- game-deployed
   "After the game was deployed"
   [data]
   (game-played data))
-
-(defn- game-played
-  "After the game was deployed"
-  [data]
-  (state/set-state :game-data data)
-  (state/set-state :original-game-data data)
-  (state/set-state :current-actions nil)
-  (state/set-state :processing-action nil))
 
 (defn- deploy-game
   "Deploys a game"
@@ -232,7 +232,7 @@
   "Plays a game"
   [ev]
   (let [actions (or (state/get-state :current-actions) [])
-        game (state/get-state :original-game-data)
+        game (state/get-state :raw-game-data)
         player-code (get-in game ["viewed-by" "player-code"])
         token (state/get-state :token)
         game-id (state/get-state :game-id)
@@ -249,7 +249,7 @@
   (let [action (reader/read-string (get-action))
         current-actions (or (state/get-state :current-actions) [])
         new-actions (conj current-actions action)
-        game (state/get-state :original-game-data)
+        game (state/get-state :raw-game-data)
         player-code (get-in game ["viewed-by" "player-code"])
         game (-> game
                  (assoc :actions new-actions)
@@ -257,6 +257,7 @@
                  (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/" player-code "?context=" jsgame)]
+    (println game)
     (state/set-state :processing-action action)
     (GET url {:handler action-added
               :error-handler error-loading-action})))
@@ -282,7 +283,6 @@
   "Checks if the play button should be disabled"
   [state]
   (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
-    (println (get-in state [:original-game-data "board" "state"]))
     (cond
       (state :processing-action) "disabled"
       (not= player-code (get-in state [:original-game-data "board" "state"])) "disabled"
