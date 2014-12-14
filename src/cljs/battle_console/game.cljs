@@ -100,6 +100,22 @@
     "p2" "warning"
     nil ""))
 
+(defn- direction-to-arrow
+  "Converts a direction to an arrow"
+  [element]
+  (condp = (get element "direction")
+    "south" "↓"
+    "north" "↑"
+    "east" "→"
+    "west" "←"
+    nil ""))
+
+(defn- display-unit
+  "Displays the unit of the given element"
+  [element]
+  (when element)
+    (str (get element "unit") " " (direction-to-arrow element)))
+
 (defn- render-board-cell
   "Renders a board's cell"
   [game x y]
@@ -108,7 +124,7 @@
         css (get-element-css game element)]
     (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
-      (dom/p #js {:className "boardUnit"} (or (get element "unit") "-"))
+      (dom/p #js {:className "boardUnit"} (or (display-unit element) "-"))
       (dom/p #js {:className "boardQuantity"} (or (get element "quantity") 0)))))
 
 (defn- render-board
@@ -177,8 +193,7 @@
         updated-game (assoc current-game "board" (or (get data "p2-focused-board") (get data "board")))]
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
-    (state/set-state :processing-action nil)
-    ))
+    (state/set-state :processing-action nil)))
 
 (defn- error-loading-action
   "Error loading action"
