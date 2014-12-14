@@ -9,8 +9,6 @@
 (defn- normalize-board
   "Uses p2-focused-board if present"
   [data]
-  (println "--normalize-board")
-  (println data)
   (if (data :p2-focused-board)
     (-> data
         (assoc :board (data :p2-focused-board))
@@ -23,6 +21,7 @@
   (state/set-state :loading-game nil)
   (state/set-state :player-code (get-in data ["viewed-by" "player-code"]))
   (let [final-data (normalize-board data)]
+    (state/set-state :raw-game-data data)
     (state/set-state :original-game-data final-data)
     (state/set-state :game-data final-data)))
 
@@ -102,6 +101,22 @@
     "p2" "warning"
     nil ""))
 
+(defn- direction-to-arrow
+  "Converts a direction to an arrow"
+  [element]
+  (condp = (get element "direction")
+    "south" "↓"
+    "north" "↑"
+    "east" "→"
+    "west" "←"
+    nil ""))
+
+(defn- display-unit
+  "Displays the unit of the given element"
+  [element]
+  (when element)
+    (str (get element "unit") " " (direction-to-arrow element)))
+
 (defn- render-board-cell
   "Renders a board's cell"
   [game x y]
@@ -110,7 +125,7 @@
         css (get-element-css game element)]
     (dom/td #js {:className css}
       (dom/p #js {:className "boardCoords"} coordCode)
-      (dom/p #js {:className "boardUnit"} (or (get element "unit") "-"))
+      (dom/p #js {:className "boardUnit"} (or (display-unit element) "-"))
       (dom/p #js {:className "boardQuantity"} (or (get element "quantity") 0)))))
 
 (defn- render-board
@@ -136,7 +151,6 @@
   [game position]
   (let [player-code (get-in game [:game-data "viewed-by" "player-code"])
         pos (name position)]
-    (println "get-name-for " pos " code: " player-code)
     (cond
       (= "p1" pos player-code) (get-in game [:game-data "p1" "name"])
       (= ["p2" pos player-code] ["p2" "p1" "p2"]) (get-in game [:game-data "p2" "name"])
@@ -178,27 +192,26 @@
         new-actions (conj actions current-action)
         current-game (state/get-state :game-data)
         updated-game (assoc current-game "board" (or (get data "p2-focused-board") (get data "board")))]
-    (println updated-game)
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
-    (state/set-state :processing-action nil)
-    ))
+    (state/set-state :processing-action nil)))
 
 (defn- error-loading-action
   "Error loading action"
   []
   (state/set-state :processing-action nil))
 
+(defn- game-played
+  "After the game was deployed"
+  [data]
+  (game-loaded data)
+  (state/set-state :current-actions nil)
+  (state/set-state :processing-action nil))
+
 (defn- game-deployed
   "After the game was deployed"
   [data]
-  (println (state/get-state :game-data))
-  (println "--game deployed")
-  (println data)
-  (state/set-state :game-data data)
-  (state/set-state :current-actions nil)
-  (state/set-state :processing-action nil)
-    )
+  (game-played data))
 
 (defn- deploy-game
   "Deploys a game"
@@ -215,13 +228,28 @@
               :handler game-deployed
               :error-handler error-loading-action})))
 
+(defn- play-game
+  "Plays a game"
+  [ev]
+  (let [actions (or (state/get-state :current-actions) [])
+        game (state/get-state :raw-game-data)
+        player-code (get-in game ["viewed-by" "player-code"])
+        token (state/get-state :token)
+        game-id (state/get-state :game-id)
+        url (str "http://api.orionsbelt.eu/game/" game-id "/turn?token=" token)]
+    (state/set-state :processing-action actions)
+    (PUT url {:params {:actions actions}
+              :format :json
+              :handler game-played
+              :error-handler error-loading-action})))
+
 (defn- add-action
   "Processes a new action"
   [ev]
   (let [action (reader/read-string (get-action))
         current-actions (or (state/get-state :current-actions) [])
         new-actions (conj current-actions action)
-        game (state/get-state :original-game-data)
+        game (state/get-state :raw-game-data)
         player-code (get-in game ["viewed-by" "player-code"])
         game (-> game
                  (assoc :actions new-actions)
@@ -229,8 +257,8 @@
                  (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/" player-code "?context=" jsgame)]
+    (println game)
     (state/set-state :processing-action action)
-    (println (.stringify js/JSON (clj->js new-actions)))
     (GET url {:handler action-added
               :error-handler error-loading-action})))
 
@@ -248,8 +276,17 @@
     (cond
       (state :processing-action) "disabled"
       (not= "deploy" (get-in state [:original-game-data "board" "state"])) "disabled"
-      (empty? (get-in state [:game-data "board" "stash" player-code])) ""
-      :else "disabled")))
+      (empty? (get-in state [:original-game-data "board" "stash" player-code])) "disabled"
+      :else "")))
+
+(defn- play-disabled
+  "Checks if the play button should be disabled"
+  [state]
+  (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
+    (cond
+      (state :processing-action) "disabled"
+      (not= player-code (get-in state [:original-game-data "board" "state"])) "disabled"
+      :else "")))
 
 (defn- render-action-console
   "Renders the action management console"
@@ -260,7 +297,8 @@
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
     (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")
-    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
+    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")
+    (dom/button #js {:id "playButton" :onClick play-game :className "btn btn-info" :disabled (play-disabled state)} "Play")))
 
 (defn- render-game
   "Renders the index page"
