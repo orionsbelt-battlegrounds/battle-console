@@ -203,7 +203,13 @@
 (defn- game-deployed
   "After the game was deployed"
   [data]
+  (game-played data))
+
+(defn- game-played
+  "After the game was deployed"
+  [data]
   (state/set-state :game-data data)
+  (state/set-state :original-game-data data)
   (state/set-state :current-actions nil)
   (state/set-state :processing-action nil))
 
@@ -220,6 +226,21 @@
     (PUT url {:params {:actions actions}
               :format :json
               :handler game-deployed
+              :error-handler error-loading-action})))
+
+(defn- play-game
+  "Plays a game"
+  [ev]
+  (let [actions (or (state/get-state :current-actions) [])
+        game (state/get-state :original-game-data)
+        player-code (get-in game ["viewed-by" "player-code"])
+        token (state/get-state :token)
+        game-id (state/get-state :game-id)
+        url (str "http://api.orionsbelt.eu/game/" game-id "/turn?token=" token)]
+    (state/set-state :processing-action actions)
+    (PUT url {:params {:actions actions}
+              :format :json
+              :handler game-played
               :error-handler error-loading-action})))
 
 (defn- add-action
@@ -257,6 +278,16 @@
       (empty? (get-in state [:original-game-data "board" "stash" player-code])) "disabled"
       :else "")))
 
+(defn- play-disabled
+  "Checks if the play button should be disabled"
+  [state]
+  (let [player-code (get-in state [:game-data "viewed-by" "player-code"])]
+    (println (get-in state [:original-game-data "board" "state"]))
+    (cond
+      (state :processing-action) "disabled"
+      (not= player-code (get-in state [:original-game-data "board" "state"])) "disabled"
+      :else "")))
+
 (defn- render-action-console
   "Renders the action management console"
   [state]
@@ -266,7 +297,8 @@
     (dom/input #js {:type "text" :id "newAction" :className "form-control"})
     (dom/button #js {:id "resetActionButton" :onClick reset-actions :className "btn btn-default"} "Reset")
     (dom/button #js {:id "addActionButton" :onClick add-action :className "btn btn-info" :disabled (add-action-disabled state)} "Add")
-    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")))
+    (dom/button #js {:id "deployButton" :onClick deploy-game :className "btn btn-info" :disabled (deploy-disabled state)} "Deploy")
+    (dom/button #js {:id "playButton" :onClick play-game :className "btn btn-info" :disabled (play-disabled state)} "Play")))
 
 (defn- render-game
   "Renders the index page"
