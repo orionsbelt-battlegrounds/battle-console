@@ -9,8 +9,6 @@
 (defn- normalize-board
   "Uses p2-focused-board if present"
   [data]
-  (println "--normalize-board")
-  (println data)
   (if (data :p2-focused-board)
     (-> data
         (assoc :board (data :p2-focused-board))
@@ -136,7 +134,6 @@
   [game position]
   (let [player-code (get-in game [:game-data "viewed-by" "player-code"])
         pos (name position)]
-    (println "get-name-for " pos " code: " player-code)
     (cond
       (= "p1" pos player-code) (get-in game [:game-data "p1" "name"])
       (= ["p2" pos player-code] ["p2" "p1" "p2"]) (get-in game [:game-data "p2" "name"])
@@ -178,7 +175,6 @@
         new-actions (conj actions current-action)
         current-game (state/get-state :game-data)
         updated-game (assoc current-game "board" (or (get data "p2-focused-board") (get data "board")))]
-    (println updated-game)
     (state/set-state :game-data updated-game)
     (state/set-state :current-actions new-actions)
     (state/set-state :processing-action nil)
@@ -192,13 +188,9 @@
 (defn- game-deployed
   "After the game was deployed"
   [data]
-  (println (state/get-state :game-data))
-  (println "--game deployed")
-  (println data)
   (state/set-state :game-data data)
   (state/set-state :current-actions nil)
-  (state/set-state :processing-action nil)
-    )
+  (state/set-state :processing-action nil))
 
 (defn- deploy-game
   "Deploys a game"
@@ -230,7 +222,6 @@
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
         url (str "http://rules.api.orionsbelt.eu/game/turn/" player-code "?context=" jsgame)]
     (state/set-state :processing-action action)
-    (println (.stringify js/JSON (clj->js new-actions)))
     (GET url {:handler action-added
               :error-handler error-loading-action})))
 
@@ -248,8 +239,8 @@
     (cond
       (state :processing-action) "disabled"
       (not= "deploy" (get-in state [:original-game-data "board" "state"])) "disabled"
-      (empty? (get-in state [:game-data "board" "stash" player-code])) ""
-      :else "disabled")))
+      (empty? (get-in state [:original-game-data "board" "stash" player-code])) "disabled"
+      :else "")))
 
 (defn- render-action-console
   "Renders the action management console"
