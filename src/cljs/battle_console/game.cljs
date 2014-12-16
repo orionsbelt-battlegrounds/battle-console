@@ -251,9 +251,10 @@
         new-actions (conj current-actions action)
         game (state/get-state :raw-game-data)
         player-code (get-in game ["viewed-by" "player-code"])
-        player-context "p1"
+        player-context (get-in game ["viewed-by" "player-code"])
         game (-> game
                  (assoc :actions new-actions)
+                 (assoc :viewed-by {:player-code player-code})
                  (assoc :p2-focused-board (= player-code "p2"))
                  (assoc :action-focus player-code))
         jsgame (js/encodeURIComponent (.stringify js/JSON (clj->js game)))
